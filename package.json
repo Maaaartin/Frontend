@@ -2,23 +2,21 @@
   "name": "react-tailwindcss",
   "version": "0.1.0",
   "private": true,
+  "author": "Martin Svoboda",
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
-    "@testing-library/user-event": "^7.2.1",
-    "axios": "^0.19.2",
-    "final-form": "^4.18.7",
-    "lodash": "^4.17.15",
-    "react": "^16.12.0",
-    "react-bnb-gallery": "^1.1.9",
-    "react-dom": "^16.12.0",
-    "react-image-gallery": "^1.0.6",
-    "react-responsive-carousel": "^3.1.51",
-    "react-router": "^5.1.2",
-    "react-router-dom": "^5.1.2",
+    "@testing-library/jest-dom": "4.2.4",
+    "@testing-library/react": "9.4.0",
+    "@testing-library/user-event": "7.2.1",
+    "axios": "0.19.2",
+    "lodash": "4.17.15",
+    "react": "16.12.0",
+    "react-dom": "16.12.0",
+    "react-image-gallery": "1.0.6",
+    "react-paginate": "6.3.2",
+    "react-router-dom": "5.1.2",
     "react-scripts": "3.4.0",
-    "react-styled-flexboxgrid": "^3.2.1",
-    "styled-components": "^5.0.1"
+    "react-styled-flexboxgrid": "3.2.1",
+    "styled-components": "5.0.1"
   },
   "scripts": {
     "start": "npm run watch:css && react-scripts start",
@@ -47,6 +45,7 @@
     "autoprefixer": "^9.7.4",
     "postcss-cli": "^7.1.0",
     "react-alice-carousel": "^1.17.3",
-    "tailwindcss": "^1.2.0"
+    "tailwindcss": "^1.2.0",
+    "tailwindcss-plugins": "^0.3.0"
   }
 }
