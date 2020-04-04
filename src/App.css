@@ -1,3 +1,15 @@
+.test{
+    position: relative;
+  float: left;
+  padding: 6px 12px;
+  line-height: 1.42857143;
+  text-decoration: none;
+  color: #2c689c;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  margin-left: -1px;
+}
+
 .pagination{
   justify-content: center;
   display: flex;
@@ -8,7 +20,7 @@
 }
 .pagination > li {
   list-style: none;
-  border: 0.9px solid;
+  /* border: 0.9px solid; */
 }
 .pagination > li > a,
 .pagination > li > span {

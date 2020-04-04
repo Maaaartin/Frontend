@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
-import { Col, Row } from 'react-styled-flexboxgrid';
+import { Col, Row } from 'react-flexbox-grid';
 import _ from 'lodash';
 import upload from '../assets/chooseFile.png';
-import { TopContainer } from '../components/TopContainer';
-import { Field } from '../components/Field';
+import TopContainer from '../components/TopContainer';
+import Field from '../components/Field';
+import Button from '../components/Button';
+import Footer from '../components/Footer';
 
 class Index extends Component {
     constructor(props) {
@@ -19,6 +21,31 @@ class Index extends Component {
             title: 'name',
             message: ''
         }
+    }
+
+    isEmpty = () => {
+        const { files, height, width, previews, title } = this.state;
+        if (!_.isInteger(height) || height < 1) {
+            this.setState({ message: 'Height invalid' });
+            return true;
+        }
+
+        if (!_.isInteger(width) || width < 1) {
+            return true;
+        }
+
+        if (!_.isInteger(previews) || previews < 1) {
+            return true;
+        }
+
+        if (_.isEmpty(files)) {
+            return true;
+        }
+
+        if (_.isEmpty(title)) {
+            return true;
+        }
+        return false;
     }
 
     handleSubmit = event => {
@@ -77,22 +104,41 @@ class Index extends Component {
 
     }
 
+    handleGalleryClick = () => {
+        const { history } = this.props;
+        history.push('/gallery');
+    }
+
+    setChange = (attribute, value) => {
+        if (!_.isEmpty(value) && value < 1) value = '1';
+        const obj = {};
+        obj[attribute] = value;
+        this.setState(obj);
+    }
+
+    setBlur = (attribute, value) => {
+        if (_.isEmpty(value)) {
+            const obj = {};
+            obj[attribute] = '1';
+            this.setState(obj);
+        }
+    }
+
     render() {
         const { height, width, previews, message, title } = this.state;
         return [
             <TopContainer />,
             // https://tailwindcss.com/components/forms/
             message && <p>{message}</p>,
-            <form>
-                <Row center='xs'>
+            <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 '>
+                <Row center='xs' className='w-full m-0'>
                     <Col style={{
                         width: '100px',
                         height: '100px',
                         margin: '60px auto 0 auto',
                         background: `url("${upload}") top center`,
                         position: 'relative',
-                        padding: 0,
-                        cursor: ''
+                        padding: 0
                     }}>
                         <Field
                             inputClassName='h-full opacity-0 cursor-pointer'
@@ -104,57 +150,54 @@ class Index extends Component {
                                 files: event.target.files
                             })}
                             style={{ width: '100px', height: '100px' }}
+                            noMargin
                         />
                     </Col>
                 </Row>
-                <Row center='xs'>
-                    <Col>
+                <Row center='xs' className='w-full m-0'>
+                    <Col xs={8}>
                         <Field
-                            label='HEIGHT'
+                            label='HEIGHT (px)'
                             type="number"
                             name="height"
                             id="height"
-                            min="0"
+                            min="1"
                             value={height}
-                            onChange={event => this.setState({
-                                height: event.target.value
-                            })}
-
+                            onChange={event => this.setChange('height', event.target.value)}
+                            onBlur={event => this.setBlur('height', event.target.value)}
                         />
                     </Col>
                 </Row>
-                <Row center='xs'>
-                    <Col>
+                <Row center='xs' className='w-full m-0'>
+                    <Col xs={8}>
                         <Field
-                            label='WIDTH'
+                            label='WIDTH (px)'
                             type="number"
                             name="width"
                             id="width"
-                            min="0"
+                            min="1"
                             value={width}
-                            onChange={event => this.setState({
-                                width: event.target.value
-                            })}
+                            onChange={event => this.setChange('width', event.target.value)}
+                            onBlur={event => this.setBlur('width', event.target.value)}
                         />
                     </Col>
                 </Row>
-                <Row center='xs'>
-                    <Col>
+                <Row center='xs' className='w-full m-0'>
+                    <Col xs={8}>
                         <Field
                             label='NUMBER OF PREVIEWS'
                             type="number"
                             name="previews"
                             id="previews"
-                            min="0"
+                            min="1"
                             value={previews}
-                            onChange={event => this.setState({
-                                previews: event.target.value
-                            })}
+                            onChange={event => this.setChange('previews', event.target.value)}
+                            onBlur={event => this.setBlur('previews', event.target.value)}
                         />
                     </Col>
                 </Row>
-                <Row center='xs'>
-                    <Col>
+                <Row center='xs' className='w-full m-0'>
+                    <Col xs={8}>
                         <Field
                             label='GALLERY NAME'
                             type='text'
@@ -167,10 +210,18 @@ class Index extends Component {
                         />
                     </Col>
                 </Row>
-                <Row center='xs'>
-                    <button type='submit' onClick={this.handleSubmit}>Submit</button>
+                <Row center='xs' className='w-full m-0 mt-3'>
+                    <Button
+                        onClick={this.handleSubmit}
+                        type='submit'
+                        text='Submit'
+                        disabled={this.isEmpty()}
+                    />
                 </Row>
-            </form >
+            </Row >,
+            <Footer children={
+                <Button text='To gallery' onClick={this.handleGalleryClick} />
+            } />
         ]
     }
 }

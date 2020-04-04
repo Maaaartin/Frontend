@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import ImageGallery from 'react-image-gallery';
 import ReactPaginate from 'react-paginate';
-import { Col, Row } from 'react-styled-flexboxgrid';
+import { Col, Row } from 'react-flexbox-grid';
 import { withRouter } from 'react-router-dom';
-import { TopContainer } from '../components/TopContainer';
+import TopContainer from '../components/TopContainer';
+import Button from '../components/Button';
+import Footer from '../components/Footer';
+import axios from 'axios';
 
-const api = `${global.END_POINT}/img/`;
 // styles
 // https://stackoverflow.com/questions/52477591/react-pagination-styling-in-global-css-not-working
 class Gallery extends Component {
@@ -20,6 +22,7 @@ class Gallery extends Component {
     }
 
     componentDidMount() {
+        const api = `${global.END_POINT}/img/`;
         const { files, previews } = this.props.location.state.data;
         const { title } = this.props.location.state;
         const images = files.map((item) => {
@@ -28,27 +31,29 @@ class Gallery extends Component {
                 ...item,
                 original: link,
                 thumbnail: link,
-                renderItem: (image) => {
-                    return <img src={link} alt='' className='m-auto' style={{ width: image.width, height: image.height }} />
-                }
+                renderItem: (image) => <img src={link} alt='' className='m-auto' style={{ width: image.width, height: image.height }} />
             }
         });
         this.setState({
             images: images,
-            pageCount: 3,// files.length / previews,
+            pageCount: files.length / previews,
             perPage: previews,
             title: title
         });
     }
 
-    handlePageClick = (data) => {
-        const selectedPage = data.selected;
-        this.setState({ currentPage: selectedPage });
-    }
+    handlePageClick = data => this.setState({ currentPage: data.selected });
 
     handleBackClick = () => {
         const { history } = this.props;
         history.push('/');
+    }
+
+
+    handleDeleteClick = () => {
+        const url = `${global.END_POINT}/delete/`;
+        axios.get(url)
+            .then(() => this.handleBackClick());
     }
 
     render() {
@@ -58,9 +63,10 @@ class Gallery extends Component {
         const indexOfLastTodo = (currentPage + 1) * perPage;
         const indexOfFirstTodo = indexOfLastTodo - perPage;
         const currentImages = images.slice(indexOfFirstTodo, indexOfLastTodo);
+        const linkClass = 'inline-block pl-0 relative float-left text-white p-3 pl-3 rounded hover:bg-blue-300';
         return [
-            <TopContainer title={title}/>,
-            <Row middle='xs'>
+            <TopContainer title={title} />,
+            <Row middle='xs' className='w-full m-0'>
                 <Col xs={12}>
                     <ImageGallery
                         showPlayButton={false}
@@ -68,30 +74,30 @@ class Gallery extends Component {
                     />
                 </Col>
             </Row>,
-            <Row>
-                <button onClick={this.handleBackClick}>
-                    Back
-            </button>
-            </Row>,
-            <Row middle='xs'>
+
+
+            <Row middle='xs' className='w-full m-0'>
                 <Col xs={12}>
                     {pageCount > 1 && <ReactPaginate
-                        previousLabel={"<"}
-                        nextLabel={">"}
-                        // breakLabel={<span className="gap">...</span>}
-                        breakClassName={'break-me'}
+                        previousLabel='<'
+                        nextLabel='>'
                         pageCount={pageCount}
                         onPageChange={this.handlePageClick}
                         forcePage={currentPage}
-                        containerClassName={'pagination'}
-                        previousLinkClassName={""}
-                        nextLinkClassName={""}
-                        subContainerClassName={'pages pagination'}
+                        containerClassName={'justify-center flex'}
+                        pageLinkClassName={linkClass}
+                        activeLinkClassName='text-white bg-blue-500 border-blue-100 hover:bg-blue-500'
+                        previousLinkClassName={linkClass}
+                        nextLinkClassName={linkClass}
+                        // subContainerClassName={'test'}
                         activeClassName={'active'}
                     />}
                 </Col>
-            </Row>
-
+            </Row>,
+            <Footer children={
+                [<Button onClick={this.handleBackClick} text='Back' />,
+                <Button onClick={this.handleDeleteClick} text='Delete' />
+                ]} />
         ];
     }
 }
