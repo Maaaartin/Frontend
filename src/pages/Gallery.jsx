@@ -7,6 +7,7 @@ import TopContainer from '../components/TopContainer';
 import Button from '../components/Button';
 import Footer from '../components/Footer';
 import axios from 'axios';
+import { isEmpty } from 'lodash';
 
 // styles
 // https://stackoverflow.com/questions/52477591/react-pagination-styling-in-global-css-not-working
@@ -22,7 +23,9 @@ class Gallery extends Component {
     }
 
     componentDidMount() {
+        const { history } = this.props;
         const api = `${global.END_POINT}/img/`;
+        if (isEmpty(this.props.location.state)) return history.push('/');
         const { files, previews } = this.props.location.state.data;
         const { title } = this.props.location.state;
         const images = files.map((item) => {
@@ -31,8 +34,22 @@ class Gallery extends Component {
                 ...item,
                 original: link,
                 thumbnail: link,
-                renderItem: (image) => <img src={link} alt='' className='m-auto' style={{ width: image.width, height: image.height }} />
-            }
+                renderItem: image => {
+                    return (
+                        <Row
+                            center='xs'
+                            style={{ height: '70vh' }}
+                            className='m-auto' >
+                            <img
+                                src={link}
+                                alt=''
+                                className='m-auto'
+                                style={{ width: image.width, height: image.height }}
+                            />
+
+                        </Row>);
+                }
+            };
         });
         this.setState({
             images: images,

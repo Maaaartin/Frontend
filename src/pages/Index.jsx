@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { Col, Row } from 'react-flexbox-grid';
-import _ from 'lodash';
+import { isEmpty, toNumber } from 'lodash';
 import upload from '../assets/chooseFile.png';
 import TopContainer from '../components/TopContainer';
 import Field from '../components/Field';
@@ -25,24 +25,24 @@ class Index extends Component {
 
     isEmpty = () => {
         const { files, height, width, previews, title } = this.state;
-        if (!_.isInteger(height) || height < 1) {
-            this.setState({ message: 'Height invalid' });
+
+        if (!toNumber(height) || height < 1) {
             return true;
         }
 
-        if (!_.isInteger(width) || width < 1) {
+        if (!toNumber(width) || width < 1) {
             return true;
         }
 
-        if (!_.isInteger(previews) || previews < 1) {
+        if (!toNumber(previews) || previews < 1) {
             return true;
         }
 
-        if (_.isEmpty(files)) {
+        if (isEmpty(files)) {
             return true;
         }
 
-        if (_.isEmpty(title)) {
+        if (isEmpty(title)) {
             return true;
         }
         return false;
@@ -53,27 +53,27 @@ class Index extends Component {
         const { history } = this.props;
         const { files, height, width, previews, title } = this.state;
 
-        if (!_.isInteger(height) || height < 1) {
+        if (!toNumber(height) || height < 1) {
             this.setState({ message: 'Height invalid' });
             return;
         }
 
-        if (!_.isInteger(width) || width < 1) {
+        if (!toNumber(width) || width < 1) {
             this.setState({ message: 'Width invalid' });
             return;
         }
 
-        if (!_.isInteger(previews) || previews < 1) {
+        if (!toNumber(previews) || previews < 1) {
             this.setState({ message: 'Previews invalid' });
             return;
         }
 
-        if (_.isEmpty(files)) {
+        if (isEmpty(files)) {
             this.setState({ message: 'Files invalid' });
             return;
         }
 
-        if (_.isEmpty(title)) {
+        if (isEmpty(title)) {
             this.setState({ message: 'Gallery name invalid' });
             return;
         }
@@ -104,23 +104,34 @@ class Index extends Component {
 
     }
 
+    // TODO make previews settable
     handleGalleryClick = () => {
         const { history } = this.props;
-        history.push('/gallery');
+        axios.get(`${global.END_POINT}/img/`)
+            .then(result => {
+                return history.push({
+                    pathname: '/gallery',
+                    state: {
+                        data:
+                        {
+                            files: result.data.map(item => ({
+                                name: item
+                            })),
+                            previews: 2
+                        }
+                    }
+                });
+            }).catch(err => console.log(err));
     }
 
     setChange = (attribute, value) => {
-        if (!_.isEmpty(value) && value < 1) value = '1';
-        const obj = {};
-        obj[attribute] = value;
-        this.setState(obj);
+        if (!isEmpty(value) && value < 1) value = '1';
+        this.setState({ [attribute]: value });
     }
 
     setBlur = (attribute, value) => {
-        if (_.isEmpty(value)) {
-            const obj = {};
-            obj[attribute] = '1';
-            this.setState(obj);
+        if (isEmpty(value)) {
+            this.setState({ [attribute]: '1' });
         }
     }
 
