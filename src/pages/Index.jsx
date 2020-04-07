@@ -3,23 +3,29 @@ import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { Col, Row } from 'react-flexbox-grid';
 import { isEmpty, toNumber } from 'lodash';
+import Modal from 'react-modal';
+
 import upload from '../assets/chooseFile.png';
 import TopContainer from '../components/TopContainer';
 import Field from '../components/Field';
 import Button from '../components/Button';
 import Footer from '../components/Footer';
 
+// TODO responsivity
 class Index extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
             files: [],
-            height: 500,
-            width: 499,
-            previews: 1,
+            height: '500',
+            width: '499',
+            previews: '1',
             title: 'name',
-            message: ''
+            galleryModalOpen: false,
+            modalPreviews: '1',
+            modalTitle: '',
+            errorModalOpen: false
         }
     }
 
@@ -54,27 +60,22 @@ class Index extends Component {
         const { files, height, width, previews, title } = this.state;
 
         if (!toNumber(height) || height < 1) {
-            this.setState({ message: 'Height invalid' });
             return;
         }
 
         if (!toNumber(width) || width < 1) {
-            this.setState({ message: 'Width invalid' });
             return;
         }
 
         if (!toNumber(previews) || previews < 1) {
-            this.setState({ message: 'Previews invalid' });
             return;
         }
 
         if (isEmpty(files)) {
-            this.setState({ message: 'Files invalid' });
             return;
         }
 
         if (isEmpty(title)) {
-            this.setState({ message: 'Gallery name invalid' });
             return;
         }
 
@@ -86,15 +87,16 @@ class Index extends Component {
         formData.append('height', height);
         formData.append('width', width);
         formData.append('previews', previews);
+        formData.append('title', title);
 
         axios.post(`${global.END_POINT}/fileupload/`,
             formData
         )
-            .then((result) => {
+            .then(() => {
                 history.push({
                     pathname: '/gallery',
                     state: {
-                        data: result.data,
+                        previews,
                         title
                     }
                 });
@@ -104,24 +106,17 @@ class Index extends Component {
 
     }
 
-    // TODO make previews settable
     handleGalleryClick = () => {
+        const { modalPreviews, modalTitle } = this.state;
+        if (Number(modalPreviews) < 1) return;
         const { history } = this.props;
-        axios.get(`${global.END_POINT}/img/`)
-            .then(result => {
-                return history.push({
-                    pathname: '/gallery',
-                    state: {
-                        data:
-                        {
-                            files: result.data.map(item => ({
-                                name: item
-                            })),
-                            previews: 2
-                        }
-                    }
-                });
-            }).catch(err => console.log(err));
+        history.push({
+            pathname: '/gallery',
+            state: {
+                previews: modalPreviews,
+                title: modalTitle
+            }
+        });
     }
 
     setChange = (attribute, value) => {
@@ -135,12 +130,56 @@ class Index extends Component {
         }
     }
 
+    // TODO make gallery name selectable + gallery name unique
     render() {
-        const { height, width, previews, message, title } = this.state;
+        const { height, width, previews, title, galleryModalOpen, modalPreviews, modalTitle } = this.state;
         return [
+            <Modal
+                isOpen={galleryModalOpen}
+                style={{
+                    content: {
+                        width: '50%',
+                        height: '50%',
+                        top: '25%',
+                        left: '25%'
+                    }
+                }}>
+                <Field
+                    label='NUMBER OF PREVIEWS'
+                    type='number'
+                    id='modalPreviews'
+                    name='modalPreviews'
+                    value={modalPreviews}
+                    onChange={event => this.setChange('modalPreviews', event.target.value)}
+                    onBlur={event => this.setBlur('modalPreviews', event.target.value)}
+                />
+                <Field
+                    label='GALLERY NAME'
+                    type='text'
+                    id='modalTitle'
+                    name='modalTitle'
+                    value={modalTitle}
+                    onChange={event => this.setState({ modalTitle: event.target.value })}
+                />
+                <Row center='xs'>
+                    <Col xs={12} sm={6}>
+                        <Button
+                            text='Show gallery'
+                            onClick={this.handleGalleryClick}
+                            disabled={modalPreviews < 1 || isEmpty(modalTitle)}
+                        />
+                    </Col>
+                    <Col xs={12} sm={6}>
+                        <Button
+                            text='Close'
+                            onClick={() => this.setState({ galleryModalOpen: false })}
+                            style={{ backgroundColor: 'gray' }}
+                        />
+                    </Col>
+                </Row>
+            </Modal>,
             <TopContainer />,
             // https://tailwindcss.com/components/forms/
-            message && <p>{message}</p>,
             <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 '>
                 <Row center='xs' className='w-full m-0'>
                     <Col style={{
@@ -231,9 +270,9 @@ class Index extends Component {
                 </Row>
             </Row >,
             <Footer children={
-                <Button text='To gallery' onClick={this.handleGalleryClick} />
+                <Button text='To gallery' onClick={() => this.setState({ galleryModalOpen: true })} />
             } />
-        ]
+        ];
     }
 }
 

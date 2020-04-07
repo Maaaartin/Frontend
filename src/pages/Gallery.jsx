@@ -24,39 +24,46 @@ class Gallery extends Component {
 
     componentDidMount() {
         const { history } = this.props;
-        const api = `${global.END_POINT}/img/`;
         if (isEmpty(this.props.location.state)) return history.push('/');
-        const { files, previews } = this.props.location.state.data;
+        const { previews } = this.props.location.state;
         const { title } = this.props.location.state;
-        const images = files.map((item) => {
-            const link = api + item.name;
-            return {
-                ...item,
-                original: link,
-                thumbnail: link,
-                renderItem: image => {
-                    return (
-                        <Row
-                            center='xs'
-                            style={{ height: '70vh' }}
-                            className='m-auto' >
-                            <img
-                                src={link}
-                                alt=''
-                                className='m-auto'
-                                style={{ width: image.width, height: image.height }}
-                            />
+        const api = `${global.END_POINT}/img/${title}/`;
+        axios.get(api)
+            .then((result) => {
+                console.log(result);
+                const files = result.data;
+                const images = files.map((item) => {
+                    const link = api + item.name;
+                    return {
+                        ...item,
+                        original: link,
+                        thumbnail: link,
+                        renderItem: image => {
+                            return (
+                                <Row
+                                    center='xs'
+                                    style={{ height: '70vh' }}
+                                    className='m-auto' >
+                                    <img
+                                        src={link}
+                                        alt=''
+                                        className='m-auto'
+                                        style={{ width: image.width, height: image.height }}
+                                    />
 
-                        </Row>);
-                }
-            };
-        });
-        this.setState({
-            images: images,
-            pageCount: files.length / previews,
-            perPage: previews,
-            title: title
-        });
+                                </Row>);
+                        }
+                    };
+                });
+                this.setState({
+                    images: images,
+                    pageCount: files.length / previews,
+                    perPage: previews,
+                    title: title
+                });
+            }).catch((err) => {
+                console.log(err);
+            });
     }
 
     handlePageClick = data => this.setState({ currentPage: data.selected });
@@ -66,21 +73,21 @@ class Gallery extends Component {
         history.push('/');
     }
 
-
     handleDeleteClick = () => {
-        const url = `${global.END_POINT}/delete/`;
+        const { title } = this.state;
+        const url = `${global.END_POINT}/img/delete/${title}/`;
         axios.get(url)
             .then(() => this.handleBackClick());
     }
 
+    // TODO page layout wrong before loading images
     render() {
         const { images, currentPage, perPage, pageCount, title } = this.state;
-
         // Logic for displaying images
         const indexOfLastTodo = (currentPage + 1) * perPage;
         const indexOfFirstTodo = indexOfLastTodo - perPage;
         const currentImages = images.slice(indexOfFirstTodo, indexOfLastTodo);
-        const linkClass = 'inline-block pl-0 relative float-left text-white p-3 pl-3 rounded hover:bg-blue-300';
+        const linkClass = 'bg-gray-400 inline-block pl-0 relative float-left text-white p-3 pl-3 rounded hover:bg-blue-300';
         return [
             <TopContainer title={title} />,
             <Row middle='xs' className='w-full m-0'>
@@ -92,7 +99,7 @@ class Gallery extends Component {
                 </Col>
             </Row>,
 
-
+            // TODO pagination not seen
             <Row middle='xs' className='w-full m-0'>
                 <Col xs={12}>
                     {pageCount > 1 && <ReactPaginate
@@ -101,13 +108,13 @@ class Gallery extends Component {
                         pageCount={pageCount}
                         onPageChange={this.handlePageClick}
                         forcePage={currentPage}
-                        containerClassName={'justify-center flex'}
+                        containerClassName='justify-center flex'
                         pageLinkClassName={linkClass}
                         activeLinkClassName='text-white bg-blue-500 border-blue-100 hover:bg-blue-500'
-                        previousLinkClassName={linkClass}
+                        previousLinkClassName={linkClass + ' transition duration-150'}
                         nextLinkClassName={linkClass}
-                        // subContainerClassName={'test'}
-                        activeClassName={'active'}
+                        // subContainerClassName='bg-black'
+                        activeClassName='active'
                     />}
                 </Col>
             </Row>,
