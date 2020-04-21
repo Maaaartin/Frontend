@@ -4,12 +4,14 @@ import { withRouter } from 'react-router-dom';
 import { Col, Row } from 'react-flexbox-grid';
 import { isEmpty, toNumber } from 'lodash';
 import Modal from 'react-modal';
+import Select from 'react-select';
 
 import upload from '../assets/chooseFile.png';
 import TopContainer from '../components/TopContainer';
 import Field from '../components/Field';
 import Button from '../components/Button';
 import Footer from '../components/Footer';
+import GalleryModal from '../components/GalleryModal';
 
 // TODO responsivity
 class Index extends Component {
@@ -24,8 +26,30 @@ class Index extends Component {
             title: 'name',
             galleryModalOpen: false,
             modalPreviews: '1',
-            modalTitle: '',
-            errorModalOpen: false
+            errorModalOpen: false,
+            galleries: [],
+            selected: null
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const { galleryModalOpen } = this.state;
+        const prevGalleryModalOpen = prevState.galleryModalOpen;
+        // only on first modal open
+        if (galleryModalOpen && galleryModalOpen !== prevGalleryModalOpen) {
+            axios.get(`${global.END_POINT}/img`)
+                .then(result => {
+                    if (isEmpty(result.data)) return;
+                    const galleries = result.data.map(item => ({
+                        value: item,
+                        label: item
+                    })).sort()
+                    this.setState({
+                        galleries,
+                        selected: galleries[0]
+                    });
+                })
+                .catch(err => console.log(err));
         }
     }
 
@@ -89,7 +113,7 @@ class Index extends Component {
         formData.append('previews', previews);
         formData.append('title', title);
 
-        axios.post(`${global.END_POINT}/fileupload/`,
+        axios.post(`${global.FILE_UPLOAD}`,
             formData
         )
             .then(() => {
@@ -107,20 +131,20 @@ class Index extends Component {
     }
 
     handleGalleryClick = () => {
-        const { modalPreviews, modalTitle } = this.state;
+        const { modalPreviews, selected } = this.state;
         if (Number(modalPreviews) < 1) return;
         const { history } = this.props;
         history.push({
             pathname: '/gallery',
             state: {
                 previews: modalPreviews,
-                title: modalTitle
+                title: selected.value
             }
         });
     }
 
     setChange = (attribute, value) => {
-        if (!isEmpty(value) && value < 1) value = '1';
+        if (!isEmpty(value) && Number(value) < 1) value = '1';
         this.setState({ [attribute]: value });
     }
 
@@ -130,54 +154,19 @@ class Index extends Component {
         }
     }
 
-    // TODO make gallery name selectable + gallery name unique
+    handleSelectChange = selected => {
+        this.setState({ selected });
+        console.log(`Option selected:`, selected);
+    };
+
     render() {
-        const { height, width, previews, title, galleryModalOpen, modalPreviews, modalTitle } = this.state;
+        const { height, width, previews, title, galleryModalOpen, modalPreviews, galleries, selected
+        } = this.state;
         return [
-            <Modal
-                isOpen={galleryModalOpen}
-                style={{
-                    content: {
-                        width: '50%',
-                        height: '50%',
-                        top: '25%',
-                        left: '25%'
-                    }
-                }}>
-                <Field
-                    label='NUMBER OF PREVIEWS'
-                    type='number'
-                    id='modalPreviews'
-                    name='modalPreviews'
-                    value={modalPreviews}
-                    onChange={event => this.setChange('modalPreviews', event.target.value)}
-                    onBlur={event => this.setBlur('modalPreviews', event.target.value)}
-                />
-                <Field
-                    label='GALLERY NAME'
-                    type='text'
-                    id='modalTitle'
-                    name='modalTitle'
-                    value={modalTitle}
-                    onChange={event => this.setState({ modalTitle: event.target.value })}
-                />
-                <Row center='xs'>
-                    <Col xs={12} sm={6}>
-                        <Button
-                            text='Show gallery'
-                            onClick={this.handleGalleryClick}
-                            disabled={modalPreviews < 1 || isEmpty(modalTitle)}
-                        />
-                    </Col>
-                    <Col xs={12} sm={6}>
-                        <Button
-                            text='Close'
-                            onClick={() => this.setState({ galleryModalOpen: false })}
-                            style={{ backgroundColor: 'gray' }}
-                        />
-                    </Col>
-                </Row>
-            </Modal>,
+            <GalleryModal
+                open={galleryModalOpen}
+                handleCloseClick={() => this.setState({ galleryModalOpen: false })}
+            />,
             <TopContainer />,
             // https://tailwindcss.com/components/forms/
             <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 '>

@@ -13,7 +13,7 @@ const Footer = ({ absolute, children }) => (
                 <Col xs={8} className="text-sm text-white font-semibold py-1">
                     {children}
                 </Col>
-                <Col xs={4} className="text-white text-sm font-semibold block py-1 px-3 text-right">
+                <Col xs={4} className="text-black text-sm font-semibold block py-1 px-3 text-right">
                     Martin Svoboda
                 </Col>
             </Row>

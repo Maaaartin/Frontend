@@ -16,12 +16,15 @@ class Gallery extends Component {
         super(props);
         this.state = {
             images: [],
+            pageCount: 0,
             perPage: 1,
             currentPage: 0,
+            modalOpen: false,
             title: ''
         };
     }
 
+    // TODO and sizes to images
     componentDidMount() {
         const { history } = this.props;
         if (isEmpty(this.props.location.state)) return history.push('/');
@@ -33,26 +36,27 @@ class Gallery extends Component {
                 console.log(result);
                 const files = result.data;
                 const images = files.map((item) => {
-                    const link = api + item.name;
+                    const img = 'data: image/png;base64, ' + item.data;
                     return {
                         ...item,
-                        original: link,
-                        thumbnail: link,
+                        original: img,
+                        thumbnail: img,
                         renderItem: image => {
                             return (
                                 <Row
                                     center='xs'
                                     style={{ height: '70vh' }}
-                                    className='m-auto' >
+                                    className='m-auto cursor-default' >
                                     <img
-                                        src={link}
-                                        alt=''
+                                        src={img}
+                                        alt={image.name}
                                         className='m-auto'
                                         style={{ width: image.width, height: image.height }}
                                     />
-
                                 </Row>);
-                        }
+                        },
+                        // renderThumbInner: () => console.log('test')
+                        // bulletClass: 'cursor-default'
                     };
                 });
                 this.setState({
@@ -80,26 +84,26 @@ class Gallery extends Component {
             .then(() => this.handleBackClick());
     }
 
-    // TODO page layout wrong before loading images
+    // TODO page layout wrong before loading images - download images
     render() {
         const { images, currentPage, perPage, pageCount, title } = this.state;
         // Logic for displaying images
         const indexOfLastTodo = (currentPage + 1) * perPage;
         const indexOfFirstTodo = indexOfLastTodo - perPage;
         const currentImages = images.slice(indexOfFirstTodo, indexOfLastTodo);
-        const linkClass = 'bg-gray-400 inline-block pl-0 relative float-left text-white p-3 pl-3 rounded hover:bg-blue-300';
+        // const linkClass = 'bg-gray-400 inline-block pl-0 relative float-left text-white p-3 pl-3 rounded hover:bg-blue-300';
+        const linkClass = 'p-3 block no-underline border-t-1 border-l-1 border-b-1 bg-gray-500 text-blue hover:bg-blue-400 transition duration-150'
         return [
             <TopContainer title={title} />,
             <Row middle='xs' className='w-full m-0'>
                 <Col xs={12}>
                     <ImageGallery
+                        additionalClass='cursor-default'
                         showPlayButton={false}
                         items={currentImages}
                     />
                 </Col>
             </Row>,
-
-            // TODO pagination not seen
             <Row middle='xs' className='w-full m-0'>
                 <Col xs={12}>
                     {pageCount > 1 && <ReactPaginate
@@ -115,12 +119,14 @@ class Gallery extends Component {
                         nextLinkClassName={linkClass}
                         // subContainerClassName='bg-black'
                         activeClassName='active'
+                        th
                     />}
                 </Col>
             </Row>,
             <Footer children={
                 [<Button onClick={this.handleBackClick} text='Back' />,
-                <Button onClick={this.handleDeleteClick} text='Delete' />
+                <Button onClick={this.handleDeleteClick} text='Delete'
+                    style={{ marginLeft: '20px' }} />
                 ]} />
         ];
     }
