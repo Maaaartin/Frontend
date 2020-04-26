@@ -14,7 +14,8 @@ const Field = ({
     multiple,
     style,
     onBlur,
-    noMargin
+    noMargin,
+    disabled
 }) => {
     return (
         <div className={noMargin || 'mt-2'}>
@@ -24,8 +25,8 @@ const Field = ({
                 {label}
             </label>}
             <input className={inputClassName ||
-                // "appearance-none block w-full bg-gray-200 text-gray-700 border border-blue-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white "
                 'px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full'
+                + (disabled ? ' cursor-not-allowed opacity-50' : '')
             }
                 type={type}
                 name={name}
@@ -37,6 +38,7 @@ const Field = ({
                 multiple={multiple}
                 style={style}
                 onBlur={onBlur}
+                disabled={disabled}
             />
         </div>
     )

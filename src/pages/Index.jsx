@@ -1,10 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { Col, Row } from 'react-flexbox-grid';
 import { isEmpty, toNumber } from 'lodash';
-import Modal from 'react-modal';
-import Select from 'react-select';
 
 import upload from '../assets/chooseFile.png';
 import TopContainer from '../components/TopContainer';
@@ -12,8 +10,12 @@ import Field from '../components/Field';
 import Button from '../components/Button';
 import Footer from '../components/Footer';
 import GalleryModal from '../components/GalleryModal';
+import Checkbox from '../components/Checkbox';
 
 // TODO responsivity
+// TODO citate sources
+// TODO icon
+// TODO change package.json
 class Index extends Component {
     constructor(props) {
         super(props)
@@ -28,7 +30,8 @@ class Index extends Component {
             modalPreviews: '1',
             errorModalOpen: false,
             galleries: [],
-            selected: null
+            selected: null,
+            checked: false
         }
     }
 
@@ -160,7 +163,8 @@ class Index extends Component {
     };
 
     render() {
-        const { height, width, previews, title, galleryModalOpen, modalPreviews, galleries, selected
+
+        const { height, width, previews, title, galleryModalOpen, checked
         } = this.state;
         return [
             <GalleryModal
@@ -169,6 +173,7 @@ class Index extends Component {
             />,
             <TopContainer />,
             // https://tailwindcss.com/components/forms/
+
             <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 '>
                 <Row center='xs' className='w-full m-0'>
                     <Col style={{
@@ -193,7 +198,12 @@ class Index extends Component {
                         />
                     </Col>
                 </Row>
-                <Row center='xs' className='w-full m-0'>
+                <Row center='xs' className='w-full m-0 mt-2'>
+                    <Col sm={12}>
+                        <Checkbox label='KEEP DIMENSIONS' checked={checked} onChange={result => this.setState({ checked: result })} />
+                    </Col>
+                </Row>
+                {< Row center='xs' className='w-full m-0' >
                     <Col xs={8}>
                         <Field
                             label='HEIGHT (px)'
@@ -204,23 +214,27 @@ class Index extends Component {
                             value={height}
                             onChange={event => this.setChange('height', event.target.value)}
                             onBlur={event => this.setBlur('height', event.target.value)}
+                            disabled={checked}
                         />
                     </Col>
-                </Row>
-                <Row center='xs' className='w-full m-0'>
-                    <Col xs={8}>
-                        <Field
-                            label='WIDTH (px)'
-                            type="number"
-                            name="width"
-                            id="width"
-                            min="1"
-                            value={width}
-                            onChange={event => this.setChange('width', event.target.value)}
-                            onBlur={event => this.setBlur('width', event.target.value)}
-                        />
-                    </Col>
-                </Row>
+                </Row >}
+                {
+                    <Row center='xs' className='w-full m-0'>
+                        <Col xs={8}>
+                            <Field
+                                label='WIDTH (px)'
+                                type="number"
+                                name="width"
+                                id="width"
+                                min="1"
+                                value={width}
+                                onChange={event => this.setChange('width', event.target.value)}
+                                onBlur={event => this.setBlur('width', event.target.value)}
+                                disabled={checked}
+                            />
+                        </Col>
+                    </Row>
+                }
                 <Row center='xs' className='w-full m-0'>
                     <Col xs={8}>
                         <Field

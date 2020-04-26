@@ -119,7 +119,6 @@ class Gallery extends Component {
                         nextLinkClassName={linkClass}
                         // subContainerClassName='bg-black'
                         activeClassName='active'
-                        th
                     />}
                 </Col>
             </Row>,
