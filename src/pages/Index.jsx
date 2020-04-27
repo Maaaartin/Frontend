@@ -57,16 +57,17 @@ class Index extends Component {
     }
 
     isEmpty = () => {
-        const { files, height, width, previews, title } = this.state;
+        const { files, height, width, previews, title, checked } = this.state;
+        if (!checked) {
+            if (!toNumber(height) || height < 1) {
+                return true;
+            }
 
-        if (!toNumber(height) || height < 1) {
-            return true;
+            if (!toNumber(width) || width < 1) {
+                return true;
+            }
+
         }
-
-        if (!toNumber(width) || width < 1) {
-            return true;
-        }
-
         if (!toNumber(previews) || previews < 1) {
             return true;
         }
@@ -84,16 +85,17 @@ class Index extends Component {
     handleSubmit = event => {
         event.preventDefault();
         const { history } = this.props;
-        const { files, height, width, previews, title } = this.state;
+        const { files, height, width, previews, title, checked } = this.state;
 
-        if (!toNumber(height) || height < 1) {
-            return;
+        if (!checked) {
+            if (!toNumber(height) || height < 1) {
+                return;
+            }
+
+            if (!toNumber(width) || width < 1) {
+                return;
+            }
         }
-
-        if (!toNumber(width) || width < 1) {
-            return;
-        }
-
         if (!toNumber(previews) || previews < 1) {
             return;
         }
@@ -111,8 +113,10 @@ class Index extends Component {
             formData.append('filetoupload', item);
         }
 
-        formData.append('height', height);
-        formData.append('width', width);
+        if (!checked) {
+            formData.append('height', height);
+            formData.append('width', width);
+        }
         formData.append('previews', previews);
         formData.append('title', title);
 
