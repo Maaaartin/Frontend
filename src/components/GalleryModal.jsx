@@ -79,28 +79,25 @@ class GalleryModal extends Component {
                     }}
                 />
                 <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 text-left "
+                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 text-left mt-2"
                     for='galleries'>
                     Gallery name
                 </label>
                 <Select
                     id='galleries'
                     value={selected}
-                    onChange={(selected) => {
-                        this.setState({ selected });
-                        console.log(`Option selected:`, selected);
-                    }}
+                    onChange={selected => this.setState({ selected })}
                     options={galleries}
                 />
-                <Row center='xs'>
-                    <Col xs={12} sm={6}>
+                <Row className='mt-2' center='xs'>
+                    <Col xs={6} className='text-right'>
                         <Button
                             text='Show gallery'
                             onClick={this.handleGalleryClick}
                             disabled={previews < 1 || isEmpty(selected)}
                         />
                     </Col>
-                    <Col xs={12} sm={6}>
+                    <Col xs={6} className='text-left'>
                         <Button
                             text='Close'
                             onClick={() => handleCloseClick()}

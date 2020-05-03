@@ -7,7 +7,7 @@ const TopContainer = ({ title }) => {
     <nav
       style={{ background: 'rgba(255,255,255,0.5)' }}
       className={
-        'top-0 z-50 w-full bg-white flex flex-wrap items-center justify-between px-2 py-3 navbar-expand-lg'
+        'top-0 z-50 w-full bg-white flex flex-wrap items-center justify-between px-2 py-3 navbar-expand-lg mb-3'
       }
     >
       <Row className="container px-4 mx-auto flex flex-wrap items-center justify-between">

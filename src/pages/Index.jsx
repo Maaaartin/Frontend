@@ -12,10 +12,7 @@ import Footer from '../components/Footer';
 import GalleryModal from '../components/GalleryModal';
 import Checkbox from '../components/Checkbox';
 
-// TODO responsivity
 // TODO citate sources
-// TODO icon
-// TODO change package.json
 class Index extends Component {
     constructor(props) {
         super(props)
@@ -163,7 +160,6 @@ class Index extends Component {
 
     handleSelectChange = selected => {
         this.setState({ selected });
-        console.log(`Option selected:`, selected);
     };
 
     render() {
@@ -178,7 +174,7 @@ class Index extends Component {
             <TopContainer />,
             // https://tailwindcss.com/components/forms/
 
-            <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 '>
+            <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 p-2'>
                 <Row center='xs' className='w-full m-0'>
                     <Col style={{
                         width: '100px',

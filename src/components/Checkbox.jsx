@@ -65,17 +65,17 @@ const Styled = styled.div`
 
 // https://gist.github.com/mbeaudru/d473014009ef12bc9eef076f3fa004ff
 const Checkbox = ({ checked, onChange, label }) => {
-    return (
-        <Styled
-            onClick={() => onChange(!checked)}
-        >
-            <input
-                type="checkbox"
-                checked={checked}
-            />
-            <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 text-left'>{label}</label>
-        </Styled>
-    );
+  return (
+    <Styled
+      onClick={() => onChange(!checked)}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+      />
+      <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 text-left'>{label}</label>
+    </Styled>
+  );
 }
 
 export default Checkbox;

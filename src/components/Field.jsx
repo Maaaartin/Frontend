@@ -1,5 +1,7 @@
 import React from 'react'
 
+// const input = React.createElement('input');
+// input.props.va
 const Field = ({
     label,
     labelClassName,
@@ -17,6 +19,20 @@ const Field = ({
     noMargin,
     disabled
 }) => {
+    const inputAttr = {
+        type,
+        name,
+        id,
+        min,
+        onChange,
+        accept,
+        multiple,
+        style,
+        onBlur,
+        disabled
+    }
+    // if value is undefined, react renders empty value attribute
+    if (value) inputAttr['value'] = value;
     return (
         <div className={noMargin || 'mt-2'}>
             {label && <label className={
@@ -28,17 +44,7 @@ const Field = ({
                 'px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full'
                 + (disabled ? ' cursor-not-allowed opacity-50' : '')
             }
-                type={type}
-                name={name}
-                id={id}
-                min={min}
-                value={value}
-                onChange={onChange}
-                accept={accept}
-                multiple={multiple}
-                style={style}
-                onBlur={onBlur}
-                disabled={disabled}
+                {...inputAttr}
             />
         </div>
     )
