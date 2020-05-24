@@ -6,7 +6,7 @@ import "react-alice-carousel/lib/alice-carousel.css";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 //icon
-//https://www.flaticon.com/free-icon/gallery_833367?term=gallery&page=1&position=6
+// https://www.flaticon.com/free-icon/gallery_833367?term=gallery&page=1&position=6
 // bg
 // https://www.svgbackgrounds.com/#subtle-prism
 

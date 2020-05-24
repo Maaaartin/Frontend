@@ -11,8 +11,6 @@ import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
-// styles
-// https://stackoverflow.com/questions/52477591/react-pagination-styling-in-global-css-not-working
 class Gallery extends Component {
     constructor(props) {
         super(props);
@@ -93,9 +91,9 @@ class Gallery extends Component {
     render() {
         const { images, currentPage, perPage, pageCount, title } = this.state;
         // Logic for displaying images
-        const indexOfLastTodo = (currentPage + 1) * perPage;
-        const indexOfFirstTodo = indexOfLastTodo - perPage;
-        const currentImages = images.slice(indexOfFirstTodo, indexOfLastTodo);
+        const lastIndex = (currentPage + 1) * perPage;
+        const firstIndex = lastIndex - perPage;
+        const currentImages = images.slice(firstIndex, lastIndex);
         const linkClass = 'py-1 px-2 block no-underline border-t-1 border-l-1 border-b-1 text-blue hover:bg-blue-400 transition duration-150 rounded-full';
         return [
             <TopContainer title={title} />,

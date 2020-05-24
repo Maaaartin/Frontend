@@ -174,7 +174,7 @@ class Index extends Component {
             <TopContainer />,
             // https://tailwindcss.com/components/forms/
 
-            <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 p-2'>
+            <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 pb-2'>
                 <Row center='xs' className='w-full m-0'>
                     <Col style={{
                         width: '100px',

@@ -1,7 +1,5 @@
 import React from 'react'
 
-// const input = React.createElement('input');
-// input.props.va
 const Field = ({
     label,
     labelClassName,
