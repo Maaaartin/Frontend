@@ -3,6 +3,7 @@ import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { Col, Row } from 'react-flexbox-grid';
 import { isEmpty, toNumber } from 'lodash';
+import Modal from 'react-modal';
 
 import upload from '../assets/chooseFile.png';
 import TopContainer from '../components/TopContainer';
@@ -12,7 +13,6 @@ import Footer from '../components/Footer';
 import GalleryModal from '../components/GalleryModal';
 import Checkbox from '../components/Checkbox';
 
-// TODO citate sources
 class Index extends Component {
     constructor(props) {
         super(props)
@@ -28,7 +28,11 @@ class Index extends Component {
             errorModalOpen: false,
             galleries: [],
             selected: null,
-            checked: false
+            keepChecked: false,
+            x: '1',
+            y: '1',
+            offsetChecked: false,
+            error: null
         }
     }
 
@@ -54,8 +58,8 @@ class Index extends Component {
     }
 
     isEmpty = () => {
-        const { files, height, width, previews, title, checked } = this.state;
-        if (!checked) {
+        const { files, height, width, previews, title, keepChecked, x, y, offsetChecked } = this.state;
+        if (!keepChecked) {
             if (!toNumber(height) || height < 1) {
                 return true;
             }
@@ -63,8 +67,18 @@ class Index extends Component {
             if (!toNumber(width) || width < 1) {
                 return true;
             }
-
         }
+
+        if (!offsetChecked) {
+            if (!toNumber(x) || x < 1) {
+                return true;
+            }
+
+            if (!toNumber(y) || y < 1) {
+                return true;
+            }
+        }
+
         if (!toNumber(previews) || previews < 1) {
             return true;
         }
@@ -82,9 +96,9 @@ class Index extends Component {
     handleSubmit = event => {
         event.preventDefault();
         const { history } = this.props;
-        const { files, height, width, previews, title, checked } = this.state;
+        const { files, height, width, previews, title, keepChecked, x, y, offsetChecked } = this.state;
 
-        if (!checked) {
+        if (!keepChecked) {
             if (!toNumber(height) || height < 1) {
                 return;
             }
@@ -93,6 +107,17 @@ class Index extends Component {
                 return;
             }
         }
+
+        if (!offsetChecked) {
+            if (!toNumber(x) || x < 1) {
+                return true;
+            }
+
+            if (!toNumber(y) || y < 1) {
+                return true;
+            }
+        }
+
         if (!toNumber(previews) || previews < 1) {
             return;
         }
@@ -110,9 +135,13 @@ class Index extends Component {
             formData.append('filetoupload', item);
         }
 
-        if (!checked) {
+        if (!keepChecked) {
             formData.append('height', height);
             formData.append('width', width);
+        }
+        if (!offsetChecked) {
+            formData.append('x', x);
+            formData.append('y', y);
         }
         formData.append('previews', previews);
         formData.append('title', title);
@@ -129,6 +158,7 @@ class Index extends Component {
                     }
                 });
             }).catch((err) => {
+                this.setState({ error: !isEmpty(err.response.data) ? err.response.data : 'No further error message' });
                 console.log(err);
             });
 
@@ -164,15 +194,41 @@ class Index extends Component {
 
     render() {
 
-        const { height, width, previews, title, galleryModalOpen, checked
+        const { height, width, previews, title, galleryModalOpen, keepChecked, x, y, offsetChecked, error
         } = this.state;
         return [
+            <Modal
+                isOpen={error}
+                style={{
+                    content: {
+                        width: '50%',
+                        height: '25%',
+                        top: '25%',
+                        left: '25%'
+                    }
+                }}>
+                <Row center='xs' className='text-2xl'>An Error occured</Row>
+                <Row center='xs' className='mb-2'>{error}</Row>
+                <Row center='xs'>
+                    <Col xs={6}>
+                        <Button
+                            text='Go to gallery'
+                            onClick={() => this.setState({ error: null, galleryModalOpen: true })}
+                        />
+                    </Col>
+                    <Col xs={6}> <Button
+                        text='Close'
+                        onClick={() => this.setState({ error: null })}
+                        style={{ backgroundColor: 'gray' }}
+                    />
+                    </Col>
+                </Row>
+            </Modal>,
             <GalleryModal
                 open={galleryModalOpen}
                 handleCloseClick={() => this.setState({ galleryModalOpen: false })}
             />,
             <TopContainer />,
-            // https://tailwindcss.com/components/forms/
 
             <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 pb-2'>
                 <Row center='xs' className='w-full m-0'>
@@ -200,10 +256,17 @@ class Index extends Component {
                 </Row>
                 <Row center='xs' className='w-full m-0 mt-2'>
                     <Col sm={12}>
-                        <Checkbox label='KEEP DIMENSIONS' checked={checked} onChange={result => this.setState({ checked: result })} />
+                        <Checkbox label='KEEP DIMENSIONS' checked={keepChecked} onChange={result => this.setState({ keepChecked: result })} />
                     </Col>
                 </Row>
-                {< Row center='xs' className='w-full m-0' >
+
+                <Row center='xs' className='w-full m-0 mt-2'>
+                    <Col sm={12}>
+                        <Checkbox label='AUTO OFFSET' checked={offsetChecked || keepChecked} onChange={result => this.setState({ offsetChecked: result })} />
+                    </Col>
+                </Row>
+
+                < Row center='xs' className='w-full m-0' >
                     <Col xs={8}>
                         <Field
                             label='HEIGHT (px)'
@@ -214,27 +277,59 @@ class Index extends Component {
                             value={height}
                             onChange={event => this.setChange('height', event.target.value)}
                             onBlur={event => this.setBlur('height', event.target.value)}
-                            disabled={checked}
+                            disabled={keepChecked}
                         />
                     </Col>
-                </Row >}
-                {
-                    <Row center='xs' className='w-full m-0'>
-                        <Col xs={8}>
-                            <Field
-                                label='WIDTH (px)'
-                                type="number"
-                                name="width"
-                                id="width"
-                                min="1"
-                                value={width}
-                                onChange={event => this.setChange('width', event.target.value)}
-                                onBlur={event => this.setBlur('width', event.target.value)}
-                                disabled={checked}
-                            />
-                        </Col>
-                    </Row>
-                }
+                </Row >
+
+                <Row center='xs' className='w-full m-0'>
+                    <Col xs={8}>
+                        <Field
+                            label='WIDTH (px)'
+                            type="number"
+                            name="width"
+                            id="width"
+                            min="1"
+                            value={width}
+                            onChange={event => this.setChange('width', event.target.value)}
+                            onBlur={event => this.setBlur('width', event.target.value)}
+                            disabled={keepChecked}
+                        />
+                    </Col>
+                </Row>
+
+                <Row center='xs' className='w-full m-0'>
+                    <Col xs={8}>
+                        <Field
+                            label='HORIZONTAL OFFSET (px)'
+                            type="number"
+                            name="x"
+                            id="x"
+                            min="1"
+                            value={x}
+                            onChange={event => this.setChange('x', event.target.value)}
+                            onBlur={event => this.setBlur('x', event.target.value)}
+                            disabled={offsetChecked || keepChecked}
+                        />
+                    </Col>
+                </Row>
+
+                <Row center='xs' className='w-full m-0'>
+                    <Col xs={8}>
+                        <Field
+                            label='VERTICAL OFFSET (px)'
+                            type="number"
+                            name="y"
+                            id="y"
+                            min="1"
+                            value={y}
+                            onChange={event => this.setChange('y', event.target.value)}
+                            onBlur={event => this.setBlur('y', event.target.value)}
+                            disabled={offsetChecked || keepChecked}
+                        />
+                    </Col>
+                </Row>
+
                 <Row center='xs' className='w-full m-0'>
                     <Col xs={8}>
                         <Field

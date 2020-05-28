@@ -40,19 +40,22 @@ class Gallery extends Component {
                         original: img,
                         thumbnail: img,
                         renderItem: image => {
-                            return <div>
-                                <Row
-                                    center='xs'
-                                    style={{ height: '70vh', overflow: 'hidden' }}
-                                    className='m-auto cursor-default' >
-                                    <img
-                                        src={img}
-                                        alt={`${image.name}, ${image.height} x ${image.width}`}
-                                        className='m-auto'
-                                        style={{ width: image.width, height: image.height }}
-                                    />
-                                </Row>
-                            </div>;
+                            return <Row
+                                center='xs'
+                                style={{ height: '70vh', overflow: 'hidden', paddingTop: '20px' }}
+                                className='m-auto cursor-default relative' >
+                                <img
+                                    src={img}
+                                    alt={`${image.name}, ${image.height} x ${image.width}`}
+                                    className='m-auto'
+                                    style={{ width: image.width, height: image.height }}
+                                />
+                                <span
+                                    style={{ top: '1%', left: '2%', backgroundColor: 'white' }}
+                                    className='m-auto absolute text-black text-sm font-semibold bg-white'>
+                                    {`${image.name}, ${image.height} x ${image.width}`}
+                                </span>
+                            </Row>;
                         },
                         // to add alt attribute
                         renderThumbInner: (image) => {
