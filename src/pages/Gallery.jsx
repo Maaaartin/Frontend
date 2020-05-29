@@ -10,6 +10,7 @@ import axios from 'axios';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import Modal from 'react-modal';
 
 class Gallery extends Component {
     constructor(props) {
@@ -20,19 +21,27 @@ class Gallery extends Component {
             perPage: 1,
             currentPage: 0,
             modalOpen: false,
-            title: ''
+            title: '',
+            error: null
         };
+
+        this.currentImg = null;
     }
 
     componentDidMount() {
         const { history } = this.props;
         if (isEmpty(this.props.location.state)) return history.push('/');
+        this.fetchData();
+    }
+
+    fetchData = () => {
         const { previews } = this.props.location.state;
         const { title } = this.props.location.state;
-        const api = `${global.END_POINT}/img/${title}/`;
+        const api = `${global.END_POINT}/img/${title}`;
         axios.get(api)
             .then((result) => {
                 const files = result.data;
+                if (isEmpty(files)) return this.handleDeleteGalleryClick();
                 const images = files.map((item) => {
                     const img = 'data:image/png;base64,' + item.data;
                     return {
@@ -40,20 +49,23 @@ class Gallery extends Component {
                         original: img,
                         thumbnail: img,
                         renderItem: image => {
+                            this.currentImg = image.name;
+                            console.log(this.currentImg);
+                            const imgText = `Name: ${image.name}, Width ${image.width} px, Height ${image.height} px`;
                             return <Row
                                 center='xs'
                                 style={{ height: '70vh', overflow: 'hidden', paddingTop: '20px' }}
                                 className='m-auto cursor-default relative' >
                                 <img
                                     src={img}
-                                    alt={`${image.name}, ${image.height} x ${image.width}`}
+                                    alt={imgText}
                                     className='m-auto'
                                     style={{ width: image.width, height: image.height }}
                                 />
                                 <span
                                     style={{ top: '1%', left: '2%', backgroundColor: 'white' }}
                                     className='m-auto absolute text-black text-sm font-semibold bg-white'>
-                                    {`${image.name}, ${image.height} x ${image.width}`}
+                                    {imgText}
                                 </span>
                             </Row>;
                         },
@@ -70,41 +82,77 @@ class Gallery extends Component {
                     images: images,
                     pageCount: files.length / previews,
                     perPage: previews,
-                    title: title
+                    title: title,
+                    currentPage: 0
                 });
             }).catch((err) => {
+                this.setState({ error: 'Could not fetch data from server.' });
                 console.log(err);
             });
     }
 
     handlePageClick = data => this.setState({ currentPage: data.selected });
 
-    handleBackClick = () => {
+    goBack = () => {
         const { history } = this.props;
+        const { error } = this.state;
+        if (error) this.setState({ error: null });
         history.push('/');
     }
 
-    handleDeleteClick = () => {
+    handleDeleteGalleryClick = () => {
         const { title } = this.state;
-        const url = `${global.END_POINT}/img/delete/${title}/`;
+        const url = `${global.END_POINT}/delete/${title}`;
         axios.get(url)
-            .then(() => this.handleBackClick());
+            .finally(() => this.goBack());
+    }
+
+    handleDeleteFileClick = () => {
+        const { title } = this.state;
+        axios.get(`${global.END_POINT}/delete/${title}/${this.currentImg}`)
+            .then((result) => {
+                this.fetchData();
+            })
+            .catch((err) => {
+                this.setState({ error: 'Could not delete image' });
+            });
     }
 
     render() {
-        const { images, currentPage, perPage, pageCount, title } = this.state;
+        const { images, currentPage, perPage, pageCount, title, error } = this.state;
         // Logic for displaying images
         const lastIndex = (currentPage + 1) * perPage;
         const firstIndex = lastIndex - perPage;
         const currentImages = images.slice(firstIndex, lastIndex);
         const linkClass = 'py-1 px-2 block no-underline border-t-1 border-l-1 border-b-1 text-blue hover:bg-blue-400 transition duration-150 rounded-full';
         return [
+            <Modal
+                isOpen={!isEmpty(error)}
+                style={{
+                    content: {
+                        width: '50%',
+                        height: '25%',
+                        top: '25%',
+                        left: '25%'
+                    }
+                }}>
+                <Row center='xs' className='text-2xl'>An Error occured</Row>
+                <Row center='xs' className='mb-2'>{error}</Row>
+                <Row center='xs'>
+                    <Button
+                        text='Back to main page'
+                        onClick={this.goBack}
+                    />
+                </Row>
+            </Modal>,
             <TopContainer title={title} />,
             <Row middle='xs' className='w-full m-0'>
                 <Col xs={12}>
                     <ImageGallery
                         showPlayButton={false}
                         items={currentImages}
+                        showFullscreenButton={isEmpty(error)}
+
                     />
                 </Col>
             </Row>,
@@ -125,8 +173,13 @@ class Gallery extends Component {
                 </Col>
             </Row>,
             <Footer children={
-                [<Button onClick={this.handleBackClick} text='Back' />,
-                <Button onClick={this.handleDeleteClick} text='Delete gallery'
+                [<Button onClick={this.goBack} text='Back' />,
+                <Button onClick={this.handleDeleteGalleryClick}
+                    text='Delete gallery'
+                    style={{ marginLeft: '20px' }} />,
+                <Button
+                    text='Delete current image'
+                    onClick={this.handleDeleteFileClick}
                     style={{ marginLeft: '20px' }} />
                 ]} />
         ];

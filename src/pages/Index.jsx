@@ -158,7 +158,7 @@ class Index extends Component {
                     }
                 });
             }).catch((err) => {
-                this.setState({ error: !isEmpty(err.response.data) ? err.response.data : 'No further error message' });
+                if (err && err.response) this.setState({ error: !isEmpty(err.response.data) ? err.response.data : 'No further error message' });
                 console.log(err);
             });
 
@@ -243,7 +243,7 @@ class Index extends Component {
                         <Field
                             inputClassName='h-full opacity-0 cursor-pointer'
                             type="file"
-                            accept="image/*"
+                            accept="image/png,image/gif,image/jpeg"
                             name="filetoupload"
                             multiple="multiple"
                             onChange={event => this.setState({
