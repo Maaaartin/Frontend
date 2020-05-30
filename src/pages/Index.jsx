@@ -27,13 +27,18 @@ class Index extends Component {
             modalPreviews: '1',
             errorModalOpen: false,
             galleries: [],
-            selected: null,
             keepChecked: false,
             x: '1',
             y: '1',
             offsetChecked: false,
-            error: null
+            error: null,
+            processing: false
         }
+    }
+
+
+    componentDidMount() {
+        document.title = 'Photogallery';
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -43,15 +48,15 @@ class Index extends Component {
         if (galleryModalOpen && galleryModalOpen !== prevGalleryModalOpen) {
             axios.get(`${global.END_POINT}/img`)
                 .then(result => {
-                    if (isEmpty(result.data)) return;
+                    if (isEmpty(result.data)) {
+                        this.setState({ galleries: [] });
+                        return;
+                    }
                     const galleries = result.data.map(item => ({
                         value: item,
                         label: item
                     })).sort()
-                    this.setState({
-                        galleries,
-                        selected: galleries[0]
-                    });
+                    this.setState({ galleries });
                 })
                 .catch(err => console.log(err));
         }
@@ -146,6 +151,7 @@ class Index extends Component {
         formData.append('previews', previews);
         formData.append('title', title);
 
+        this.setState({ processing: true });
         axios.post(`${global.FILE_UPLOAD}`,
             formData
         )
@@ -158,23 +164,10 @@ class Index extends Component {
                     }
                 });
             }).catch((err) => {
-                if (err && err.response) this.setState({ error: !isEmpty(err.response.data) ? err.response.data : 'No further error message' });
+                if (err && err.response) this.setState({ processing: false, error: !isEmpty(err.response.data) ? err.response.data : 'No further error message' });
                 console.log(err);
             });
 
-    }
-
-    handleGalleryClick = () => {
-        const { modalPreviews, selected } = this.state;
-        if (Number(modalPreviews) < 1) return;
-        const { history } = this.props;
-        history.push({
-            pathname: '/gallery',
-            state: {
-                previews: modalPreviews,
-                title: selected.value
-            }
-        });
     }
 
     setChange = (attribute, value) => {
@@ -188,15 +181,22 @@ class Index extends Component {
         }
     }
 
-    handleSelectChange = selected => {
-        this.setState({ selected });
-    };
-
     render() {
-
-        const { height, width, previews, title, galleryModalOpen, keepChecked, x, y, offsetChecked, error
+        const { height, width, previews, title, galleryModalOpen, keepChecked, x, y, offsetChecked, error, processing, galleries
         } = this.state;
         return [
+            <Modal
+                isOpen={processing}
+                style={{
+                    content: {
+                        width: '10%',
+                        height: '10%',
+                        top: '35%',
+                        left: '45%'
+                    }
+                }}>
+                Processing...
+            </Modal>,
             <Modal
                 isOpen={error}
                 style={{
@@ -227,6 +227,7 @@ class Index extends Component {
             <GalleryModal
                 open={galleryModalOpen}
                 handleCloseClick={() => this.setState({ galleryModalOpen: false })}
+                galleries={galleries}
             />,
             <TopContainer />,
 

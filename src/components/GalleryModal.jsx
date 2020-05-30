@@ -5,7 +5,6 @@ import Button from './Button';
 import { Row, Col } from "react-flexbox-grid";
 import Select from 'react-select';
 import { isEmpty } from "lodash";
-import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 
 class GalleryModal extends Component {
@@ -14,24 +13,19 @@ class GalleryModal extends Component {
 
         this.state = {
             selected: null,
-            galleries: [],
             previews: '1'
         }
+    }
 
-        axios.get(`${global.END_POINT}/img`)
-            .then(result => {
-                if (isEmpty(result.data)) return;
-                const galleries = result.data.map(item => ({
-                    value: item,
-                    label: item
-                })).sort();
-
-                this.setState({
-                    galleries,
-                    selected: galleries[0]
-                });
-            })
-            .catch(err => console.log(err));
+    componentDidUpdate(prevProps, prevState) {
+        const { selected } = this.state;
+        const { galleries } = this.props;
+        if (!isEmpty(galleries) && isEmpty(selected)) {
+            this.setState({ selected: galleries[0] });
+        }
+        if (isEmpty(galleries) && !isEmpty(selected)) {
+            this.setState({ selected: null });
+        }
     }
 
     handleGalleryClick = () => {
@@ -48,8 +42,8 @@ class GalleryModal extends Component {
     }
 
     render() {
-        const { open, handleCloseClick } = this.props;
-        const { galleries, previews, selected } = this.state;
+        const { open, handleCloseClick, galleries } = this.props;
+        const { previews, selected } = this.state;
         return (
             <Modal
                 isOpen={open}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 
-// https://github.com/creativetimofficial/tailwind-starter-kit/tree/master/Landing%20Page/react-landing-page
 const TopContainer = ({ title }) => {
   return (
     <nav
@@ -13,7 +12,7 @@ const TopContainer = ({ title }) => {
       <Row className="container px-4 mx-auto flex flex-wrap items-center justify-between">
         <Col xs={8} className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
           <p className={
-            'text-black text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-no-wrap uppercase'
+            'text-black text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-no-wrap'
           }>
             {title || 'Gallery'}
           </p>
