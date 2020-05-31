@@ -18,7 +18,7 @@ const TopContainer = ({ title }) => {
           </p>
         </Col>
         <Col xs={4} className='text-right'>
-          Bachelor's Thesis of Martin Svoboda
+          Author: Martin Svoboda
         </Col>
       </Row>
     </nav>

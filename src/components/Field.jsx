@@ -15,7 +15,8 @@ const Field = ({
     style,
     onBlur,
     noMargin,
-    disabled
+    disabled,
+    onKeyDown
 }) => {
     const inputAttr = {
         type,
@@ -27,7 +28,8 @@ const Field = ({
         multiple,
         style,
         onBlur,
-        disabled
+        disabled,
+        onKeyDown
     }
     // if value is undefined, react renders empty value attribute
     if (value) inputAttr['value'] = value;

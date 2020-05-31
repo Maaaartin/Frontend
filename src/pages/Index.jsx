@@ -19,10 +19,10 @@ class Index extends Component {
 
         this.state = {
             files: [],
-            height: '500',
-            width: '499',
+            height: '100',
+            width: '200',
             previews: '1',
-            title: 'name',
+            title: '',
             galleryModalOpen: false,
             modalPreviews: '1',
             errorModalOpen: false,
@@ -181,6 +181,14 @@ class Index extends Component {
         }
     }
 
+    onEnter = (event) => {
+        // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            this.handleSubmit(event);
+        }
+    }
     render() {
         const { height, width, previews, title, galleryModalOpen, keepChecked, x, y, offsetChecked, error, processing, galleries
         } = this.state;
@@ -279,6 +287,7 @@ class Index extends Component {
                             onChange={event => this.setChange('height', event.target.value)}
                             onBlur={event => this.setBlur('height', event.target.value)}
                             disabled={keepChecked}
+                            onKeyDown={this.onEnter}
                         />
                     </Col>
                 </Row >
@@ -295,6 +304,7 @@ class Index extends Component {
                             onChange={event => this.setChange('width', event.target.value)}
                             onBlur={event => this.setBlur('width', event.target.value)}
                             disabled={keepChecked}
+                            onKeyDown={this.onEnter}
                         />
                     </Col>
                 </Row>
@@ -311,6 +321,7 @@ class Index extends Component {
                             onChange={event => this.setChange('x', event.target.value)}
                             onBlur={event => this.setBlur('x', event.target.value)}
                             disabled={offsetChecked || keepChecked}
+                            onKeyDown={this.onEnter}
                         />
                     </Col>
                 </Row>
@@ -327,6 +338,7 @@ class Index extends Component {
                             onChange={event => this.setChange('y', event.target.value)}
                             onBlur={event => this.setBlur('y', event.target.value)}
                             disabled={offsetChecked || keepChecked}
+                            onKeyDown={this.onEnter}
                         />
                     </Col>
                 </Row>
@@ -342,6 +354,7 @@ class Index extends Component {
                             value={previews}
                             onChange={event => this.setChange('previews', event.target.value)}
                             onBlur={event => this.setBlur('previews', event.target.value)}
+                            onKeyDown={this.onEnter}
                         />
                     </Col>
                 </Row>
@@ -356,6 +369,7 @@ class Index extends Component {
                             onChange={event => this.setState({
                                 title: event.target.value
                             })}
+                            onKeyDown={this.onEnter}
                         />
                     </Col>
                 </Row>

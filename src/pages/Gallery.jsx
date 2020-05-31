@@ -3,14 +3,15 @@ import ImageGallery from 'react-image-gallery';
 import ReactPaginate from 'react-paginate';
 import { Col, Row } from 'react-flexbox-grid';
 import { withRouter } from 'react-router-dom';
-import TopContainer from '../components/TopContainer';
-import Button from '../components/Button';
-import Footer from '../components/Footer';
 import axios from 'axios';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
+
+import TopContainer from '../components/TopContainer';
+import Button from '../components/Button';
+import Footer from '../components/Footer';
 
 class Gallery extends Component {
     constructor(props) {
@@ -31,6 +32,7 @@ class Gallery extends Component {
     componentDidMount() {
         const { history } = this.props;
         if (isEmpty(this.props.location.state)) return history.push('/');
+        document.title = this.props.location.state.title;
         this.fetchData();
     }
 
@@ -63,7 +65,7 @@ class Gallery extends Component {
                                     style={{ width: image.width, height: image.height }}
                                 />
                                 <span
-                                    style={{ top: '1%', left: '2%', backgroundColor: 'white' }}
+                                    style={{ top: '4%', left: '2%', backgroundColor: 'white' }}
                                     className='m-auto absolute text-black text-sm font-semibold bg-white'>
                                     {imgText}
                                 </span>
@@ -105,6 +107,18 @@ class Gallery extends Component {
         const url = `${global.END_POINT}/delete/${title}`;
         axios.get(url)
             .finally(() => this.goBack());
+    }
+
+    handleDownloadGalleryClick = () => {
+        const { title } = this.state;
+        const url = `${global.END_POINT}/download/${title}`;
+        window.open(url);
+    }
+
+    handleDownloadFileClick = () => {
+        const { title } = this.state;
+        const url = `${global.END_POINT}/download/${title}/${this.currentImg}`;
+        window.open(url);
     }
 
     handleDeleteFileClick = () => {
@@ -172,16 +186,33 @@ class Gallery extends Component {
                     />}
                 </Col>
             </Row>,
-            <Footer children={
-                [<Button onClick={this.goBack} text='Back' />,
-                <Button onClick={this.handleDeleteGalleryClick}
-                    text='Delete gallery'
-                    style={{ marginLeft: '20px' }} />,
-                <Button
-                    text='Delete current image'
-                    onClick={this.handleDeleteFileClick}
-                    style={{ marginLeft: '20px' }} />
-                ]} />
+            <Footer children={[
+                <Row className='items-center'>
+                    <Col xs={6} lg={1}><Button onClick={this.goBack} text='Back' /></Col>
+                    <Col xs={6} lg={2}><Button onClick={this.handleDeleteGalleryClick}
+                        text='Delete gallery'
+                        style={{ backgroundColor: '#D4121B' }}
+                    /></Col>
+
+                    <Col xs={6} lg={4}><Button
+                        text='Delete current image'
+                        onClick={this.handleDeleteFileClick}
+                        style={{ backgroundColor: '#D4121B' }}
+                    /></Col>
+                    <Col xs={6} lg={3}>
+                        <Button
+                            text='Download current image'
+                            onClick={this.handleDownloadFileClick}
+                        />
+                    </Col>
+                    <Col xs={6} lg={2}>
+                        <Button
+                            text='Download Gallery'
+                            onClick={this.handleDownloadGalleryClick}
+                        /></Col>
+                </Row>
+            ]
+            } />
         ];
     }
 }
