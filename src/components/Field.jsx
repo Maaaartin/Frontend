@@ -1,5 +1,8 @@
 import React from 'react'
 
+/**
+ * Creates styled input element for form
+ */
 const Field = ({
     label,
     labelClassName,

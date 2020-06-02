@@ -13,6 +13,9 @@ import TopContainer from '../components/TopContainer';
 import Button from '../components/Button';
 import Footer from '../components/Footer';
 
+/**
+ * Creates page with gallery
+ */
 class Gallery extends Component {
     constructor(props) {
         super(props);
@@ -36,6 +39,9 @@ class Gallery extends Component {
         this.fetchData();
     }
 
+    /**
+     * Fetches images form server
+     */
     fetchData = () => {
         const { previews } = this.props.location.state;
         const { title } = this.props.location.state;
@@ -93,6 +99,10 @@ class Gallery extends Component {
             });
     }
 
+    /**
+     * Handles page change
+     * @param {any} data 
+     */
     handlePageClick = data => this.setState({ currentPage: data.selected });
 
     goBack = () => {

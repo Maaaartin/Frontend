@@ -63,6 +63,9 @@ const Styled = styled.div`
   }
 `;
 
+/**
+ * Creates styled checkbox
+ */
 // https://gist.github.com/mbeaudru/d473014009ef12bc9eef076f3fa004ff
 const Checkbox = ({ checked, onChange, label }) => {
   return (

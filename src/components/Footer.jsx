@@ -1,5 +1,8 @@
 import React from 'react';
 
+/**
+ * Creates styled footer
+ */
 const Footer = ({ children }) => (
     <footer className='relativepb-6 mb-2' >
         <div className="container mx-auto px-4">

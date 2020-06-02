@@ -98,6 +98,9 @@ class Index extends Component {
         return false;
     }
 
+    /**
+     * Check form data for validity and sends form
+     */
     handleSubmit = event => {
         event.preventDefault();
         const { history } = this.props;

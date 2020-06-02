@@ -1,5 +1,8 @@
 import React from 'react';
 
+/**
+ * Creates styled button 
+ */
 const Button = ({ onClick, type, text, disabled, style }) => {
     return (
         <button

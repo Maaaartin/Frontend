@@ -1,6 +1,10 @@
 import React from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 
+
+/**
+ * Creates nv element
+ */
 const TopContainer = ({ title }) => {
   return (
     <nav
