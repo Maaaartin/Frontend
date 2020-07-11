@@ -80,6 +80,7 @@ class Gallery extends Component {
                         // to add alt attribute
                         renderThumbInner: (image) => {
                             return <img
+                                className='m-auto'
                                 src={img}
                                 alt={`${image.name}, ${image.height} x ${image.width}`}
                             />

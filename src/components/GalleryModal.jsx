@@ -7,7 +7,6 @@ import Select from 'react-select';
 import { isEmpty } from "lodash";
 import { withRouter } from 'react-router-dom';
 
-
 /**
  * Creates modal window for selecting a gallery to display
  */

@@ -194,7 +194,7 @@ class Index extends Component {
     }
     render() {
         const { height, width, previews, title, galleryModalOpen, keepChecked, x, y, offsetChecked, error, processing, galleries
-        } = this.state;
+            , files } = this.state;
         return [
             <Modal
                 isOpen={processing}
@@ -243,11 +243,19 @@ class Index extends Component {
             <TopContainer />,
 
             <Row center='xs' className='m-auto mt-5 relative flex flex-col min-w-0 break-words w-1/2 mb-6 shadow-lg rounded-lg bg-gray-300 border-0 pb-2'>
+                <Row center='xs' className='w-full m-0 mt-2'>
+                    <Col sm={12}>
+                        {'Selected files:' + (isEmpty(files) ? ' -' : Object.keys(files).map((item, index) => {
+                            return ' ' + files[index].name
+                        }))
+                        }
+                    </Col>
+                </Row>
                 <Row center='xs' className='w-full m-0'>
                     <Col style={{
                         width: '100px',
                         height: '100px',
-                        margin: '60px auto 0 auto',
+                        margin: '30px auto 0 auto',
                         background: `url("${upload}") top center`,
                         position: 'relative',
                         padding: 0
