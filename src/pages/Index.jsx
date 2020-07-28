@@ -197,13 +197,16 @@ class Index extends Component {
             , files } = this.state;
         return [
             <Modal
+
                 isOpen={processing}
                 style={{
                     content: {
-                        width: '10%',
-                        height: '10%',
+                        width: '200px',
+                        height: '90px',
                         top: '35%',
-                        left: '45%'
+                        left: '45%',
+                        paddingLeft: '60px',
+                        paddingTop: '30px'
                     }
                 }}>
                 Processing...
